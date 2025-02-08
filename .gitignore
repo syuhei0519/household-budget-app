@@ -1,0 +1,17 @@
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+.env
+.env.local
+
+# Go
+bin/
+vendor/
+*.exe
+*.out
+*.log
+
+# PostgreSQL
+pgdata/
+*.sql
