@@ -9,6 +9,8 @@ RUN go mod tidy && go mod download
 # ソースコードをコピー
 COPY . .
 
+WORKDIR /app/src
+
 # Gin のホットリロード用 air をインストール
 RUN go install github.com/cosmtrek/air@v1.43.0
 
