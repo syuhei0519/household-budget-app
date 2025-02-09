@@ -1,0 +1,25 @@
+{
+  "name": "Household Budget App Dev Container",
+  "dockerComposeFile": "../docker/docker-compose.yml",
+  "service": "vscode",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "golang.go",
+        "hashicorp.terraform",
+        "ms-python.python",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.wordWrap": "on",
+        "terminal.integrated.shell.linux": "/bin/bash"
+      }
+    }
+  }
+}

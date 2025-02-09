@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: local/docker/backend.Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - app_network
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/mydb
+      - GIN_MODE=release
+    volumes:
+      - ../../backend:/app
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: local/docker/frontend.Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app_network
+    environment:
+      - API_URL=http://backend:8080
+    volumes:
+      - ../../frontend:/app
+
+  db:
+    image: postgres:15
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - app_network
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: jenkins.Dockerfile
+    container_name: jenkins
+    ports:
+      - "8081:8080"
+    networks:
+      - ci_network
+
+  redmine:
+    build:
+      context: .
+      dockerfile: redmine.Dockerfile
+    container_name: redmine
+    ports:
+      - "3100:3000"
+    environment:
+      REDMINE_DB_POSTGRES: redmine_db
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: redminepassword
+    volumes:
+      - redmine_data:/usr/src/redmine/files
+    networks:
+      - redmine_network
+
+  redmine_db:
+    image: postgres:15
+    container_name: redmine-db
+    environment:
+      POSTGRES_DB: redmine
+      POSTGRES_USER: redmine
+      POSTGRES_PASSWORD: redminepassword
+    volumes:
+      - redmine_db_data:/var/lib/postgresql/data
+    networks:
+      - redmine_network
+
+  frontend_package:
+    image: node:20
+    container_name: frontend_package
+    working_dir: /app
+    volumes:
+      - ../../frontend:/app
+    command: npm install
+    networks:
+      - app_network
+
+  vscode:
+    build:
+      context: ../devcontainer
+      dockerfile: devcontainer.Dockerfile
+    container_name: vscode_dev
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+  redmine_data:
+  redmine_db_data:
+
+networks:
+  app_network:
+    driver: bridge
+  ci_network:
+    driver: bridge
+  redmine_network:
+    driver: bridge
