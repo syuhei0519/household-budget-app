@@ -13,5 +13,5 @@ vendor/
 *.log
 
 # PostgreSQL
-pgdata/
-*.sql
+# pgdata/
+# *.sql
